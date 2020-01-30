@@ -516,3 +516,37 @@ def test_enable_disable():
     assert dummy._count == 3*l
     assert tummy._count == 4*l
     assert out == batch.append(batch).append(batch).append(batch) # 4x from the first one
+
+def test_cuda_cpu():
+
+    if not torch.cuda.is_available(): # This test will only work on a system with CUDA enabled.
+        return
+    A = DummyModel({'m': [3.]}, out_column='y1')
+    B = DummyModel({'m': [1.], 'b': [2.]}, input=A, in_column='y1', out_column='y')
+    devices = set([x.device for x in B.state_dict().values()])
+    assert len(devices) == 1
+    assert devices.pop().type == 'cpu'
+    devices = set([x.device for x in A.state_dict().values()])
+    assert len(devices) == 1
+    assert devices.pop().type == 'cpu'
+    B.cuda()
+    devices = set([x.device for x in B.state_dict().values()])    
+    assert len(devices) == 1
+    assert devices.pop().type == 'cuda'
+    devices = set([x.device for x in A.state_dict().values()])
+    assert len(devices) == 1
+    assert devices.pop().type == 'cuda'
+    B.cpu()
+    devices = set([x.device for x in B.state_dict().values()])    
+    assert len(devices) == 1
+    assert devices.pop().type == 'cpu'
+    devices = set([x.device for x in A.state_dict().values()])
+    assert len(devices) == 1
+    assert devices.pop().type == 'cpu'
+    A.cuda()
+    devices = set([x.device for x in B.state_dict().values()])    
+    assert len(devices) == 1
+    assert devices.pop().type == 'cpu'
+    devices = set([x.device for x in A.state_dict().values()])
+    assert len(devices) == 1
+    assert devices.pop().type == 'cuda'

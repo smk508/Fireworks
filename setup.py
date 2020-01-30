@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='fireworks-ml',
-    version='0.3.6',
+    version='0.3.9',
     packages=find_packages(),
     author_email="skhan8@mail.einstein.yu.edu",
     description="A batch-processing framework for data analysis and machine learning using PyTorch.",
